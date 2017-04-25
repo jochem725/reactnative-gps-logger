@@ -2,7 +2,9 @@
     "compilerOptions": {
         "outDir": "./built",
         "allowJs": true,
-        "target": "ES2015"
+        "target": "ES2015",
+        "jsx": "react-native",
+        "baseUrl": "."
     },
     "include": [
         "./js/**/*"
