@@ -26,6 +26,7 @@ export default class LocationSampler {
     public stop(): void {
         if (this.timerId !== -1) {
             clearInterval(this.timerId);
+            this.timerId = -1;
         }
     }
 

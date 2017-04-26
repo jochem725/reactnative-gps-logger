@@ -5,20 +5,16 @@
  */
 
 import React, { Component } from 'react';
-import LocationSampler from 'built/LocationSamplerComponent'
+import LocationSampler from './built/LocationSamplerComponent'
 import {
   AppRegistry,
-  StyleSheet,
-  Text,
   View
 } from 'react-native';
 
 export default class GPSLogger extends Component {
   render() {
     return (
-      <View>
-        <LocationSampler />
-      </View>
+      <LocationSampler />
     );
   }
 }
