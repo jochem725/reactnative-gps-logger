@@ -3,15 +3,17 @@ export default class LocationSampler {
     private readonly DEFAULT_INTERVAL = 1000;
     public running: boolean;
     public interval: number;
+    public highAccuracy: boolean;
     private timerId: number;
     private samples: Position[];
 
     /**
      * LocationSampler handles sampling of a location with a fixed interval.
      */
-    constructor(interval: number) {
+    constructor(interval: number, highAccuracy: boolean) {
         this.running = false;
         this.timerId = -1;
+        this.highAccuracy = highAccuracy;
 
         this.interval = interval < 0 ? interval : this.DEFAULT_INTERVAL
         this.samples = [];
@@ -50,9 +52,9 @@ export default class LocationSampler {
      */
     private getGeoLocation(): void {
         navigator.geolocation.getCurrentPosition(
-            (position) => {console.log(this.samples); this.samples.push(position); },
+            (position) => {console.log(position.coords.latitude); this.samples.push(position)},
             (error) => {console.log(error);},
-            {}
+            {enableHighAccuracy: this.highAccuracy}
         );
     }
 }
