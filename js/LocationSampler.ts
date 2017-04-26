@@ -2,8 +2,8 @@ export default class LocationSampler {
 
     private readonly DEFAULT_INTERVAL = 1000;
     public running: boolean;
-    private _timerId: number;
     public interval: number;
+    private timerId: number;
     private samples: Position[];
 
     /**
@@ -11,20 +11,15 @@ export default class LocationSampler {
      */
     constructor(interval: number) {
         this.running = false;
-        this._timerId = -1;
+        this.timerId = -1;
 
         this.interval = interval < 0 ? interval : this.DEFAULT_INTERVAL
         this.samples = [];
     }
 
-    get timerId() {
-        return this._timerId;
-    }
-
-    set timerId(value: number) {
-        this._timerId = value;
-    }
-
+    /**
+     * Start sampling, taking a geolocation at the frequency of the interval.
+     */
     public start(): void {
         if (this.timerId === -1) {
             this.timerId = setInterval(() => {this.getGeoLocation()}, this.interval);
@@ -32,6 +27,9 @@ export default class LocationSampler {
         }
     }
 
+    /**
+     * Stop sampling, clearing the timer interval.
+     */
     public stop(): void {
         if (this.timerId !== -1) {
             clearInterval(this.timerId);
@@ -40,10 +38,16 @@ export default class LocationSampler {
         }
     }
 
+    /**
+     * Returns the array of collected samples.
+     */
     public getCollectedSamples(): Position[] {
         return this.samples;
     }
 
+    /**
+     * Adds a geolocation sample to the list of collected samples.
+     */
     private getGeoLocation(): void {
         navigator.geolocation.getCurrentPosition(
             (position) => {console.log(this.samples); this.samples.push(position); },
