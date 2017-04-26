@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "react": "16.0.0-alpha.6",
-    "react-native": "0.43.4"
+    "react-native": "0.43.4",
+    "react-native-fs": "^2.1.0-rc.1"
   },
   "devDependencies": {
     "@types/react": "^15.0.23",
