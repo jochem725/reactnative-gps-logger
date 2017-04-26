@@ -5,6 +5,7 @@
  */
 
 import React, { Component } from 'react';
+import LocationSampler from './built/LocationSamplerComponent'
 import {
   AppRegistry,
   View
