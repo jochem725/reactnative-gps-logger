@@ -4,29 +4,28 @@ export default class LocationSampler {
 
     private readonly DEFAULT_INTERVAL = 1000;
     public running: boolean;
-    private _timerId: number;
     public interval: number;
+    public highAccuracy: boolean;
+    public measurementName: string;
+    private timerId: number;
     private samples: Position[];
 
     /**
      * LocationSampler handles sampling of a location with a fixed interval.
      */
-    constructor(interval: number) {
+    constructor(interval: number, highAccuracy: boolean, measurementName: string) {
         this.running = false;
-        this._timerId = -1;
-        console.log("hello world!");
+        this.timerId = -1;
+        this.highAccuracy = highAccuracy;
+        this.measurementName = measurementName
+        
         this.interval = interval < 0 ? interval : this.DEFAULT_INTERVAL
         this.samples = [];
     }
 
-    get timerId() {
-        return this._timerId;
-    }
-
-    set timerId(value: number) {
-        this._timerId = value;
-    }
-
+    /**
+     * Start sampling, taking a geolocation at the frequency of the interval.
+     */
     public start(): void {
         if (this.timerId === -1) {
             this.timerId = setInterval(() => {this.getGeoLocation()}, this.interval);
@@ -34,6 +33,9 @@ export default class LocationSampler {
         }
     }
 
+    /**
+     * Stop sampling, clearing the timer interval.
+     */
     public stop(): void {
         if (this.timerId !== -1) {
             clearInterval(this.timerId);
@@ -52,15 +54,21 @@ export default class LocationSampler {
         });
     }
 
+    /**
+     * Returns the array of collected samples.
+     */
     public getCollectedSamples(): Position[] {
         return this.samples;
     }
 
+    /**
+     * Adds a geolocation sample to the list of collected samples.
+     */
     private getGeoLocation(): void {
         navigator.geolocation.getCurrentPosition(
-            (position) => {console.log(this.samples); this.samples.push(position); },
+            (position) => {console.log(position.coords.latitude); this.samples.push(position)},
             (error) => {console.log(error);},
-            {}
+            {enableHighAccuracy: this.highAccuracy}
         );
     }
 }

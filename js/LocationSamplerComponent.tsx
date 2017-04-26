@@ -4,6 +4,7 @@ import {
     ScrollView,
     Text,
     Button,
+    Switch,
     TextInput,
     StyleSheet
 } from 'react-native';
@@ -12,38 +13,48 @@ import LocationSampler from './LocationSampler';
 class LocationSamplerState {
     running: boolean
     sampler: LocationSampler
+    highAccuracyEnabledSetting: boolean
     sampleRateSetting: number
+    measurementNameSetting: string
 }
 
 export default class LocationSamplerComponent extends React.Component<undefined, LocationSamplerState> {
     
     constructor(props) {
         super(props)
-        let sampler = new LocationSampler(1000)
+        let sampler = new LocationSampler(1000, false, 'Name')
 
         this.state = {
             running: false,
+            highAccuracyEnabledSetting: false,
             sampler: sampler,
-            sampleRateSetting: 1000
+            sampleRateSetting: 1000,
+            measurementNameSetting: 'Name'
         }
     }
     
     public render() {
         return (
-            <View style={{flex: 1}}>
+            <ScrollView style={styles.background}>
                 <View style={styles.titleContainer}>
                         <Text style={styles.textstyle_title}>GeoSampler</Text>
                 </View>
-                <View style={styles.container}>
-                    <View style={styles.controlContainer}>
-                        <Text style={styles.textstyle_label}>Sample Interval (ms):</Text>
-                        <TextInput style={styles.textInput} onChangeText={(text) => this.setState({sampleRateSetting: parseInt(text.replace(',', ''))})} value={this.state.sampleRateSetting.toString()} keyboardType='numeric'/>
-                    </View>
-                    <View style={styles.controlContainer}>
-                        <Button title={this.buttonStartStopText()} onPress={() => {this.buttonStartStop()}}></Button>
-                    </View>
+                <View style={styles.controlContainer}>
+                    <Text style={styles.textstyle_label}>Name your measurement:</Text>
+                    <TextInput style={styles.textInput} editable={!this.state.running} onChangeText={(text) => this.setState({measurementNameSetting: text})} value={this.state.measurementNameSetting} keyboardType='default'/>
                 </View>
-            </View>
+                <View style={styles.controlContainer}>
+                    <Text style={styles.textstyle_label}>Sample Interval (ms):</Text>
+                    <TextInput style={styles.textInput} editable={!this.state.running} onChangeText={(text) => this.setState({sampleRateSetting: parseInt(text.replace(',', ''))})} value={this.state.sampleRateSetting.toString()} keyboardType='numeric'/>
+                </View>
+                <View style={styles.controlContainer}>
+                    <Text style={styles.textstyle_label}>High Accuracy Mode:</Text>
+                    <Switch disabled={this.state.running} value={this.state.highAccuracyEnabledSetting} onValueChange={(val) => this.setState({highAccuracyEnabledSetting: val})}/>
+                </View>
+                <View style={styles.controlContainer}>
+                    <Button title={this.buttonStartStopText()} onPress={() => {this.buttonStartStop()}}></Button>
+                </View>
+            </ScrollView>
         );
     }
 
@@ -61,7 +72,7 @@ export default class LocationSamplerComponent extends React.Component<undefined,
                 this.state.sampler.stop()
             })
         } else {
-            this.setState({sampler: new LocationSampler(this.state.sampleRateSetting), running: true}, () => {
+            this.setState({sampler: new LocationSampler(this.state.sampleRateSetting, this.state.highAccuracyEnabledSetting, this.state.measurementNameSetting), running: true}, () => {
                 this.state.sampler.start()
             })
         }
@@ -69,9 +80,8 @@ export default class LocationSamplerComponent extends React.Component<undefined,
 }
 
 let styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'stretch',
+    background: {
+        backgroundColor: 'skyblue'
     } as any,
     titleContainer: {
         height: 100,
@@ -92,7 +102,8 @@ let styles = StyleSheet.create({
         alignItems: 'center',
         flexDirection: 'column',
         justifyContent: 'center',
-        backgroundColor: 'skyblue'
+        backgroundColor: 'skyblue',
+        margin: 10
     } as any,
     textInput: {
         height: 50,
