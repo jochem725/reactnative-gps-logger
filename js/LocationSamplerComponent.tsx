@@ -15,19 +15,21 @@ class LocationSamplerState {
     sampler: LocationSampler
     highAccuracyEnabledSetting: boolean
     sampleRateSetting: number
+    measurementNameSetting: string
 }
 
 export default class LocationSamplerComponent extends React.Component<undefined, LocationSamplerState> {
     
     constructor(props) {
         super(props)
-        let sampler = new LocationSampler(1000)
+        let sampler = new LocationSampler(1000, false, 'Name')
 
         this.state = {
             running: false,
             highAccuracyEnabledSetting: false,
             sampler: sampler,
-            sampleRateSetting: 1000
+            sampleRateSetting: 1000,
+            measurementNameSetting: 'Name'
         }
     }
     
@@ -36,6 +38,10 @@ export default class LocationSamplerComponent extends React.Component<undefined,
             <ScrollView style={styles.background}>
                 <View style={styles.titleContainer}>
                         <Text style={styles.textstyle_title}>GeoSampler</Text>
+                </View>
+                <View style={styles.controlContainer}>
+                    <Text style={styles.textstyle_label}>Name your measurement:</Text>
+                    <TextInput style={styles.textInput} editable={!this.state.running} onChangeText={(text) => this.setState({measurementNameSetting: text})} value={this.state.measurementNameSetting} keyboardType='default'/>
                 </View>
                 <View style={styles.controlContainer}>
                     <Text style={styles.textstyle_label}>Sample Interval (ms):</Text>
@@ -66,7 +72,7 @@ export default class LocationSamplerComponent extends React.Component<undefined,
                 this.state.sampler.stop()
             })
         } else {
-            this.setState({sampler: new LocationSampler(this.state.sampleRateSetting, this.state.highAccuracyEnabledSetting), running: true}, () => {
+            this.setState({sampler: new LocationSampler(this.state.sampleRateSetting, this.state.highAccuracyEnabledSetting, this.state.measurementNameSetting), running: true}, () => {
                 this.state.sampler.start()
             })
         }

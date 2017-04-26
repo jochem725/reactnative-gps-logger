@@ -4,16 +4,18 @@ export default class LocationSampler {
     public running: boolean;
     public interval: number;
     public highAccuracy: boolean;
+    public measurementName: string;
     private timerId: number;
     private samples: Position[];
 
     /**
      * LocationSampler handles sampling of a location with a fixed interval.
      */
-    constructor(interval: number, highAccuracy: boolean) {
+    constructor(interval: number, highAccuracy: boolean, measurementName: string) {
         this.running = false;
         this.timerId = -1;
         this.highAccuracy = highAccuracy;
+        this.measurementName = measurementName
 
         this.interval = interval < 0 ? interval : this.DEFAULT_INTERVAL
         this.samples = [];
