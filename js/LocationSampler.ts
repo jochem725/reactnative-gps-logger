@@ -1,3 +1,5 @@
+var RNFS = require('react-native-fs');
+
 export default class LocationSampler {
 
     private readonly DEFAULT_INTERVAL = 1000;
@@ -12,7 +14,7 @@ export default class LocationSampler {
     constructor(interval: number) {
         this.running = false;
         this._timerId = -1;
-
+        console.log("hello world!");
         this.interval = interval < 0 ? interval : this.DEFAULT_INTERVAL
         this.samples = [];
     }
@@ -38,6 +40,13 @@ export default class LocationSampler {
             this.timerId = -1;
             this.running = false;
         }
+        var path = RNFS.DocumentDirectoryPath + '/test.txt';
+        RNFS.writeFile(path, 'Hello world!', 'utf8')
+            .then((succes)=> {
+                console.log('File written');
+            }).catch((err) => {
+            console.log(err.message);
+        });
     }
 
     public getCollectedSamples(): Position[] {
