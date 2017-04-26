@@ -1,9 +1,9 @@
 export default class LocationSampler {
 
     private readonly DEFAULT_INTERVAL = 1000;
-    private running: boolean;
-    private timerId: number;
-    private interval: number;
+    public running: boolean;
+    private _timerId: number;
+    public interval: number;
     private samples: Position[];
 
     /**
@@ -11,15 +11,24 @@ export default class LocationSampler {
      */
     constructor(interval: number) {
         this.running = false;
-        this.timerId = -1;
+        this._timerId = -1;
 
         this.interval = interval < 0 ? interval : this.DEFAULT_INTERVAL
         this.samples = [];
     }
 
+    get timerId() {
+        return this._timerId;
+    }
+
+    set timerId(value: number) {
+        this._timerId = value;
+    }
+
     public start(): void {
         if (this.timerId === -1) {
-            this.timerId = setInterval(this.getGeoLocation, this.interval);
+            this.timerId = setInterval(() => {this.getGeoLocation()}, this.interval);
+            this.running = true;
         }
     }
 
@@ -27,6 +36,7 @@ export default class LocationSampler {
         if (this.timerId !== -1) {
             clearInterval(this.timerId);
             this.timerId = -1;
+            this.running = false;
         }
     }
 
@@ -36,8 +46,8 @@ export default class LocationSampler {
 
     private getGeoLocation(): void {
         navigator.geolocation.getCurrentPosition(
-            (position) => { this.samples.push(position); },
-            (error) => { console.log(error); },
+            (position) => {console.log(this.samples); this.samples.push(position); },
+            (error) => {console.log(error);},
             {}
         );
     }
