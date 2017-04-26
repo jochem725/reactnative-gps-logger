@@ -40,8 +40,11 @@ export default class LocationSampler {
             this.timerId = -1;
             this.running = false;
         }
-        var path = RNFS.DocumentDirectoryPath + '/test.txt';
-        RNFS.writeFile(path, 'Hello world!', 'utf8')
+        console.log(RNFS.ExternalDirectoryPath);
+        var path = RNFS.ExternalDirectoryPath + '/data.json';
+
+        var data = JSON.stringify({accuracy: 1, battery_start: 99, battery_end: 67, samples: this.samples});
+        RNFS.writeFile(path, data, 'utf8')
             .then((succes)=> {
                 console.log('File written');
             }).catch((err) => {
