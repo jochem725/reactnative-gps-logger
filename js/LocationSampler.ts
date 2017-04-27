@@ -1,3 +1,6 @@
+import {
+    NativeModules
+} from 'react-native';
 var RNFS = require('react-native-fs');
 
 export default class LocationSampler {
@@ -65,10 +68,16 @@ export default class LocationSampler {
      * Adds a geolocation sample to the list of collected samples.
      */
     private getGeoLocation(): void {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {console.log(position.coords.latitude); this.samples.push(position)},
-            (error) => {console.log(error);},
-            {enableHighAccuracy: this.highAccuracy}
+        NativeModules.Location.getGPSLocation(
+            (err, position) => {
+                if(!err) {
+                    var data = JSON.parse(position);
+                    this.samples.push(data);
+                    console.log(data.longitude);
+                } else {
+                    console.log("Error in retrieving location");
+                }
+            }
         );
     }
 }
