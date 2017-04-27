@@ -46,7 +46,7 @@ export default class LocationSampler {
             this.running = false;
         }
         console.log(RNFS.ExternalDirectoryPath);
-        var path = RNFS.ExternalDirectoryPath + '/data.json';
+        var path = RNFS.ExternalDirectoryPath + '/' + this.measurementName + '.json';
 
         var data = JSON.stringify({accuracy: 1, battery_start: 99, battery_end: 67, samples: this.samples});
         RNFS.writeFile(path, data, 'utf8')
