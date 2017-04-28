@@ -7,5 +7,6 @@ before_install:
 install:
   - npm install
   - tsc
+  - react-native link react-native-fs
 script:
   - npm test
