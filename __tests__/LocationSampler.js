@@ -15,26 +15,6 @@ describe('the constructor', () => {
         let locationSampler = new LocationSampler(1234, false, "Test");
         expect(locationSampler.interval).toEqual(1234)
     });
-    test('does not set running to true instantiation', () => {
-        let locationSampler = new LocationSampler(1000, false, "Test");
-        expect(locationSampler.running).toEqual(false)
-    });
-    test('does not set a timer on instantiation on instantiation', () => {
-        let locationSampler = new LocationSampler(1000, false, "Test");
-        expect(locationSampler.timerId).toEqual(-1)
-    });
-    test('does set the highaccuracy boolean on instantiation', () => {
-        let locationSampler = new LocationSampler(1000, false, "Test");
-        expect(locationSampler.highAccuracy).toEqual(false)
-    });
-    test('does set the measurement name on instantiation', () => {
-        let locationSampler = new LocationSampler(1000, false, "Test");
-        expect(locationSampler.measurementName).toEqual("Test")
-    });
-    test('does not have samples on instantiation', () => {
-        let locationSampler = new LocationSampler(1000, false, "Test");
-        expect(locationSampler.samples.length).toEqual(0)
-    });
 });
 
 describe('the start() method', () => {
