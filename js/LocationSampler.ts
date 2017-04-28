@@ -46,14 +46,26 @@ export default class LocationSampler {
         }
         console.log(RNFS.ExternalDirectoryPath);
         var path = RNFS.ExternalDirectoryPath + '/' + this.measurementName + '.json';
+	
+		NativeModules.NativeLocation.getBatteryLevel(
+			(err, level) => {
+		    	if (!err) {
+	                console.log("batlevel:" + level);
+					var data = JSON.stringify({samples: this.samples, battery: level}); 			
+					RNFS.writeFile(path, data, 'utf8')
+						.then((succes)=> {
+						console.log('File written');
+					}).catch((err) => {
+						console.log(err.message);
+					});
+	            } else {
+	                console.log("Error in battery info");
+	            }
+				
+		});
+        
 
-        var data = JSON.stringify({samples: this.samples});
-        RNFS.writeFile(path, data, 'utf8')
-            .then((succes)=> {
-                console.log('File written');
-            }).catch((err) => {
-            console.log(err.message);
-        });
+       
     }
 
     /**

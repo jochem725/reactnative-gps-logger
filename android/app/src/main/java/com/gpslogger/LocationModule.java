@@ -1,9 +1,13 @@
 package com.gpslogger;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.BatteryManager;
 import android.os.Bundle;
 
 import com.facebook.react.bridge.Callback;
@@ -63,12 +67,26 @@ public class LocationModule extends ReactContextBaseJavaModule {
      * @throws JSONException when the json object cannot be created
      */
     public String createLocationJSON(Location location) throws JSONException {
+
         JSONObject json = new JSONObject();
         json.put("longitude", location.getLongitude());
         json.put("latitude", location.getLatitude());
-	json.put("altitude", location.getAltitude());
+	    json.put("altitude", location.getAltitude());
         json.put("timestamp", location.getTime());
         return json.toString();
+    }
+
+    /**
+     * returns the current battery level
+     * @return int of the battery level
+     */
+    @ReactMethod
+    public void getBatteryLevel(final Callback battery){
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = MainApplication.getAppContext().registerReceiver(null, ifilter);
+        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        float batlevel = ((float)batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) / (float)scale)* 100.0f;
+        battery.invoke(0, batlevel);
     }
 
 
