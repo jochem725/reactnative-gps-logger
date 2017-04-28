@@ -66,6 +66,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
         JSONObject json = new JSONObject();
         json.put("longitude", location.getLongitude());
         json.put("latitude", location.getLatitude());
+	json.put("altitude", location.getAltitude());
         json.put("timestamp", location.getTime());
         return json.toString();
     }
