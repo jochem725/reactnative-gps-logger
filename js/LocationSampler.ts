@@ -12,7 +12,7 @@ export default class LocationSampler {
     public measurementName: string;
     private timerId: number;
     private samples: Position[];
-	private batteryLevelStart : number;
+    private batteryLevelStart : number;
 
     /**
      * LocationSampler handles sampling of a location with a fixed interval.
@@ -21,7 +21,7 @@ export default class LocationSampler {
         this.running = false;
         this.timerId = -1;
         this.highAccuracy = highAccuracy;
-        this.measurementName = measurementName
+        this.measurementName = measuremestName
         this.interval = interval > 0 ? interval : this.DEFAULT_INTERVAL
         this.samples = [];
     }
@@ -33,16 +33,15 @@ export default class LocationSampler {
         if (this.timerId === -1) {
             this.timerId = setInterval(() => {this.getGeoLocation()}, this.interval);
             this.running = true;
-			NativeModules.NativeLocation.getBatteryLevel(
-			(err, level) => {
-		    	if (!err) {
-	                console.log("batlevel:" + level);
-					this.batteryLevelStart = level;
-	            } else {
-	                console.log("Error in battery info");
-	            }
-				
-		});
+            NativeModules.NativeLocation.getBatteryLevel(
+            (err, level) => {
+                if (!err) {
+                    console.log("batlevel:" + level);
+                    this.batteryLevelStart = level;
+                } else {
+                    console.log("Error in battery info");
+                }
+            });
         }
     }
 
@@ -55,28 +54,17 @@ export default class LocationSampler {
             this.timerId = -1;
             this.running = false;
         }
-        console.log(RNFS.ExternalDirectoryPath);
         var path = RNFS.ExternalDirectoryPath + '/' + this.measurementName + '.json';
-	
-		NativeModules.NativeLocation.getBatteryLevel(
-			(err, level) => {
-		    	if (!err) {
-	                console.log("batlevel:" + level);
-					var data = JSON.stringify({samples: this.samples, battery_before: this.batteryLevelStart, battery_after: level}); 			
-					RNFS.writeFile(path, data, 'utf8')
-						.then((succes)=> {
-						console.log('File written');
-					}).catch((err) => {
-						console.log(err.message);
-					});
-	            } else {
-	                console.log("Error in battery info");
-	            }
-				
-		});
-        
-
-       
+        NativeModules.NativeLocation.getBatteryLevel(
+            (err, level) => {
+                if (!err) {
+                    const data = JSON.stringify({ battery_after: level,
+                                                battery_before: this.batteryLevelStart,
+                                                samples: this.samples});
+                    RNFS.writeFile(path, data, "utf8");
+                }
+            },
+        );
     }
 
     /**
@@ -93,13 +81,10 @@ export default class LocationSampler {
         NativeModules.NativeLocation.getGPSLocation(
             (err, position) => {
                 if (!err) {
-                    var data = JSON.parse(position);
+                    const data = JSON.parse(position);
                     this.samples.push(data);
-                    console.log(data.longitude);
-                } else {
-                    console.log("Error in retrieving location");
                 }
-            }
+            },
         );
     }
 }
