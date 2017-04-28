@@ -6,8 +6,6 @@ const ReactNativeFS = require("react-native-fs");
 
 import renderer from 'react-test-renderer';
 
-jest.unmock('ScrollView')
-
 describe('the constructor', () => {
     test('does not set negative sampling intervals', () => {
         let locationSampler = new LocationSampler(-1000, false, "Test");
