@@ -12,8 +12,8 @@ jest.mock('NetInfo', () => {
   return {
     isConnected: {
       fetch: () => {
-        return new Promise((accept, resolve) => {
-          accept(true);
+        return new Promise((resolve, reject) => {
+          resolve(true);
         })
       }
     }
