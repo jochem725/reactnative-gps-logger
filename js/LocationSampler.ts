@@ -21,7 +21,7 @@ export default class LocationSampler {
         this.running = false;
         this.timerId = -1;
         this.highAccuracy = highAccuracy;
-        this.measurementName = measuremestName
+        this.measurementName = measurementName;
         this.interval = interval > 0 ? interval : this.DEFAULT_INTERVAL
         this.samples = [];
     }
