@@ -12,6 +12,7 @@ export default class LocationSampler {
     public measurementName: string;
     private timerId: number;
     private samples: Position[];
+	private batteryLevelStart : number;
 
     /**
      * LocationSampler handles sampling of a location with a fixed interval.
@@ -32,6 +33,16 @@ export default class LocationSampler {
         if (this.timerId === -1) {
             this.timerId = setInterval(() => {this.getGeoLocation()}, this.interval);
             this.running = true;
+			NativeModules.NativeLocation.getBatteryLevel(
+			(err, level) => {
+		    	if (!err) {
+	                console.log("batlevel:" + level);
+					this.batteryLevelStart = level;
+	            } else {
+	                console.log("Error in battery info");
+	            }
+				
+		});
         }
     }
 
@@ -51,7 +62,7 @@ export default class LocationSampler {
 			(err, level) => {
 		    	if (!err) {
 	                console.log("batlevel:" + level);
-					var data = JSON.stringify({samples: this.samples, battery: level}); 			
+					var data = JSON.stringify({samples: this.samples, battery_before: this.batteryLevelStart, battery_after: level}); 			
 					RNFS.writeFile(path, data, 'utf8')
 						.then((succes)=> {
 						console.log('File written');
