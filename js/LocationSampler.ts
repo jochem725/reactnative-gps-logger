@@ -1,15 +1,13 @@
-import {
-    NativeModules
-} from 'react-native';
-var RNFS = require('react-native-fs');
+import * as NativeModules from "react-native";
+const ReactNativeFS = require("react-native-fs");
 
 export default class LocationSampler {
 
-    private readonly DEFAULT_INTERVAL = 1000;
     public running: boolean;
     public interval: number;
     public highAccuracy: boolean;
     public measurementName: string;
+    private readonly DEFAULT_INTERVAL = 1000;
     private timerId: number;
     private samples: Position[];
 
@@ -20,7 +18,7 @@ export default class LocationSampler {
         this.running = false;
         this.timerId = -1;
         this.highAccuracy = highAccuracy;
-        this.measurementName = measurementName
+        this.measurementName = measurementName;
         this.interval = interval > 0 ? interval : this.DEFAULT_INTERVAL
         this.samples = [];
     }
@@ -44,11 +42,11 @@ export default class LocationSampler {
             this.timerId = -1;
             this.running = false;
         }
-        console.log(RNFS.ExternalDirectoryPath);
-        var path = RNFS.ExternalDirectoryPath + '/' + this.measurementName + '.json';
 
-        var data = JSON.stringify({samples: this.samples});
-        RNFS.writeFile(path, data, 'utf8')
+        const path = ReactNativeFS.ExternalDirectoryPath + "/" + this.measurementName + ".json";
+        const data = JSON.stringify({samples: this.samples});
+
+        ReactNativeFS.writeFile(path, data, "utf8")
             .then((succes)=> {
                 console.log('File written');
             }).catch((err) => {
@@ -70,7 +68,7 @@ export default class LocationSampler {
         NativeModules.NativeLocation.getGPSLocation(
             (err, position) => {
                 if (!err) {
-                    var data = JSON.parse(position);
+                    const data = JSON.parse(position);
                     this.samples.push(data);
                     console.log(data.longitude);
                 } else {
