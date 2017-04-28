@@ -1,4 +1,4 @@
-import * as NativeModules from "react-native";
+import { NativeModules } from "react-native";
 const ReactNativeFS = require("react-native-fs");
 
 export default class LocationSampler {
