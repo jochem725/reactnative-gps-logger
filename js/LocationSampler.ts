@@ -1,3 +1,8 @@
+import {
+    NativeModules
+} from 'react-native';
+var RNFS = require('react-native-fs');
+
 export default class LocationSampler {
 
     private readonly DEFAULT_INTERVAL = 1000;
@@ -16,8 +21,7 @@ export default class LocationSampler {
         this.timerId = -1;
         this.highAccuracy = highAccuracy;
         this.measurementName = measurementName
-
-        this.interval = interval < 0 ? interval : this.DEFAULT_INTERVAL
+        this.interval = interval > 0 ? interval : this.DEFAULT_INTERVAL
         this.samples = [];
     }
 
@@ -40,6 +44,16 @@ export default class LocationSampler {
             this.timerId = -1;
             this.running = false;
         }
+        console.log(RNFS.ExternalDirectoryPath);
+        var path = RNFS.ExternalDirectoryPath + '/' + this.measurementName + '.json';
+
+        var data = JSON.stringify({samples: this.samples});
+        RNFS.writeFile(path, data, 'utf8')
+            .then((succes)=> {
+                console.log('File written');
+            }).catch((err) => {
+            console.log(err.message);
+        });
     }
 
     /**
@@ -53,10 +67,16 @@ export default class LocationSampler {
      * Adds a geolocation sample to the list of collected samples.
      */
     private getGeoLocation(): void {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {console.log(position.coords.latitude); this.samples.push(position)},
-            (error) => {console.log(error);},
-            {enableHighAccuracy: this.highAccuracy}
+        NativeModules.NativeLocation.getGPSLocation(
+            (err, position) => {
+                if (!err) {
+                    var data = JSON.parse(position);
+                    this.samples.push(data);
+                    console.log(data.longitude);
+                } else {
+                    console.log("Error in retrieving location");
+                }
+            }
         );
     }
 }
