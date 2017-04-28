@@ -47,7 +47,7 @@ export default class LocationSamplerComponent extends React.Component<undefined,
                 </View>
                 <View style={styles.controlContainer}>
                     <Text style={styles.textstyle_label}>High Accuracy Mode:</Text>
-                    <Switch disabled={this.state.running} value={this.state.highAccuracyEnabledSetting} onValueChange={(val) => this.setState({ highAccuracyEnabledSetting: val })} />
+                    <Switch disabled={this.state.sampler.running} value={this.state.highAccuracyEnabledSetting} onValueChange={(val) => this.setState({ highAccuracyEnabledSetting: val })} />
                 </View>
                 <View style={styles.controlContainer}>
                     <Button title={this.buttonStartStopText()} onPress={() => { this.buttonStartStop(); }}></Button>
@@ -67,13 +67,14 @@ export default class LocationSamplerComponent extends React.Component<undefined,
     public buttonStartStop() {
         if (this.state.sampler.running) {
             this.state.sampler.stop();
+            this.forceUpdate();
         } else {
             const locationSampler = new LocationSampler(this.state.sampleRateSetting, this.state.highAccuracyEnabledSetting, this.state.measurementNameSetting);
             this.setState({ sampler: locationSampler}, () => {
                 this.state.sampler.start();
+                this.forceUpdate();
             });
         }
-        this.forceUpdate();
     }
 }
 
