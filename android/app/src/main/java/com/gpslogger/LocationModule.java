@@ -11,6 +11,7 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LocationModule extends ReactContextBaseJavaModule {
@@ -22,7 +23,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
 
     @Override
     public String getName() {
-        return "Location";
+        return "NativeLocation";
     }
 
     /**
@@ -38,15 +39,13 @@ public class LocationModule extends ReactContextBaseJavaModule {
         locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, new LocationListener(){
 
             public void onLocationChanged(Location location) {
-                JSONObject json = new JSONObject();
+                String result = new JSONObject().toString();
                 try {
-                    json.put("longitude", location.getLongitude());
-                    json.put("latitude", location.getLatitude());
-                    json.put("timestamp", location.getTime());
+                   result = createLocationJSON(location);
                 } catch(Exception e){
-                    position.invoke(1, json.toString());
+                    position.invoke(1, result);
                 }
-                position.invoke(0, json.toString());
+                position.invoke(0, result);
             }
 
             public void onProviderDisabled(String provider) {}
@@ -56,4 +55,20 @@ public class LocationModule extends ReactContextBaseJavaModule {
             }
         }, null);
     }
+
+    /**
+     * Creates a json object from a location object
+     * @param location object of the current position
+     * @return Json object of the current location
+     * @throws JSONException when the json object cannot be created
+     */
+    public String createLocationJSON(Location location) throws JSONException {
+        JSONObject json = new JSONObject();
+        json.put("longitude", location.getLongitude());
+        json.put("latitude", location.getLatitude());
+        json.put("timestamp", location.getTime());
+        return json.toString();
+    }
+
+
 }

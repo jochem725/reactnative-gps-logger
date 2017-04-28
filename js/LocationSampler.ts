@@ -47,7 +47,7 @@ export default class LocationSampler {
         console.log(RNFS.ExternalDirectoryPath);
         var path = RNFS.ExternalDirectoryPath + '/' + this.measurementName + '.json';
 
-        var data = JSON.stringify({accuracy: 1, battery_start: 99, battery_end: 67, samples: this.samples});
+        var data = JSON.stringify({samples: this.samples});
         RNFS.writeFile(path, data, 'utf8')
             .then((succes)=> {
                 console.log('File written');
@@ -67,9 +67,9 @@ export default class LocationSampler {
      * Adds a geolocation sample to the list of collected samples.
      */
     private getGeoLocation(): void {
-        NativeModules.Location.getGPSLocation(
+        NativeModules.NativeLocation.getGPSLocation(
             (err, position) => {
-                if(!err) {
+                if (!err) {
                     var data = JSON.parse(position);
                     this.samples.push(data);
                     console.log(data.longitude);
