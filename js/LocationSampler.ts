@@ -55,13 +55,6 @@ export default class LocationSampler {
     }
 
     /**
-     * Returns the array of collected samples.
-     */
-    public getCollectedSamples(): Position[] {
-        return this.samples;
-    }
-
-    /**
      * Adds a geolocation sample to the list of collected samples.
      */
     private getGeoLocation(): void {

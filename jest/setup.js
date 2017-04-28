@@ -25,4 +25,11 @@ jest.mock('PushNotificationIOS', () => ({
   requestPermissions: jest.fn(),
 }));
 
-jest.mock('react-native-fs', () => 'RNFS');
+jest.mock('react-native-fs', () => {
+  return {
+    writeFile: jest.fn(() => {
+      return Promise.resolve()
+    }),
+    ExternalDirectoryPath: "PATH"
+  }
+});
