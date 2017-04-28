@@ -19,7 +19,7 @@ export default class LocationSampler {
         this.timerId = -1;
         this.highAccuracy = highAccuracy;
         this.measurementName = measurementName;
-        this.interval = interval > 0 ? interval : this.DEFAULT_INTERVAL
+        this.interval = interval > 0 ? interval : this.DEFAULT_INTERVAL;
         this.samples = [];
     }
 
@@ -28,7 +28,7 @@ export default class LocationSampler {
      */
     public start(): void {
         if (this.timerId === -1) {
-            this.timerId = setInterval(() => {this.getGeoLocation()}, this.interval);
+            this.timerId = setInterval(() => {this.getGeoLocation(); }, this.interval);
             this.running = true;
         }
     }
@@ -47,7 +47,7 @@ export default class LocationSampler {
         const data = JSON.stringify({samples: this.samples});
 
         ReactNativeFS.writeFile(path, data, "utf8")
-            .then((succes)=> {
+            .then((succes) => {
                 console.log('File written');
             }).catch((err) => {
             console.log(err.message);
@@ -74,7 +74,7 @@ export default class LocationSampler {
                 } else {
                     console.log("Error in retrieving location");
                 }
-            }
+            },
         );
     }
 }
