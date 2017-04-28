@@ -1,47 +1,115 @@
 import * as React from 'react';
 import {
     View,
+    ScrollView,
     Text,
+    Button,
+    Switch,
+    TextInput,
     StyleSheet
 } from 'react-native';
+import LocationSampler from './LocationSampler';
 
-interface LocationSamplerProps {
-
+class LocationSamplerState {
+    running: boolean
+    sampler: LocationSampler
+    highAccuracyEnabledSetting: boolean
+    sampleRateSetting: number
+    measurementNameSetting: string
 }
 
-export default class LocationSamplerComponent extends React.Component<undefined, undefined> {
+export default class LocationSamplerComponent extends React.Component<undefined, LocationSamplerState> {
+    
+    constructor(props) {
+        super(props)
+        let sampler = new LocationSampler(1000, false, 'Name')
+
+        this.state = {
+            running: false,
+            highAccuracyEnabledSetting: false,
+            sampler: sampler,
+            sampleRateSetting: 1000,
+            measurementNameSetting: 'Name'
+        }
+    }
+    
     public render() {
         return (
-            <View style={styles.container}>
+            <ScrollView style={styles.background}>
                 <View style={styles.titleContainer}>
-                    <Text style={styles.title}>GeoSampler</Text>
+                        <Text style={styles.textstyle_title}>GeoSampler</Text>
                 </View>
                 <View style={styles.controlContainer}>
-                    <Text>Sample Interval (ms):</Text>
+                    <Text style={styles.textstyle_label}>Name your measurement:</Text>
+                    <TextInput style={styles.textInput} editable={!this.state.running} onChangeText={(text) => this.setState({measurementNameSetting: text})} value={this.state.measurementNameSetting} keyboardType='default'/>
                 </View>
-            </View>
+                <View style={styles.controlContainer}>
+                    <Text style={styles.textstyle_label}>Sample Interval (ms):</Text>
+                    <TextInput style={styles.textInput} editable={!this.state.running} onChangeText={(text) => this.setState({sampleRateSetting: parseInt(text.replace(',', ''))})} value={this.state.sampleRateSetting.toString()} keyboardType='numeric'/>
+                </View>
+                <View style={styles.controlContainer}>
+                    <Text style={styles.textstyle_label}>High Accuracy Mode:</Text>
+                    <Switch disabled={this.state.running} value={this.state.highAccuracyEnabledSetting} onValueChange={(val) => this.setState({highAccuracyEnabledSetting: val})}/>
+                </View>
+                <View style={styles.controlContainer}>
+                    <Button title={this.buttonStartStopText()} onPress={() => {this.buttonStartStop()}}></Button>
+                </View>
+            </ScrollView>
         );
+    }
+
+    public buttonStartStopText() {
+        if (this.state.running) {
+            return 'Stop'
+        } else {
+            return 'Start'
+        }
+    }
+
+    public buttonStartStop() {
+        if (this.state.running) {
+            this.setState({running: false}, () => {
+                this.state.sampler.stop()
+            })
+        } else {
+            this.setState({sampler: new LocationSampler(this.state.sampleRateSetting, this.state.highAccuracyEnabledSetting, this.state.measurementNameSetting), running: true}, () => {
+                this.state.sampler.start()
+            })
+        }
     }
 }
 
 let styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: 'stretch',
+    background: {
+        backgroundColor: 'skyblue'
     } as any,
     titleContainer: {
-        flex: 1,
+        height: 100,
         alignItems: 'center',
         justifyContent: 'center',
         backgroundColor: 'powderblue'
     },
-    title: {
+    textstyle_title: {
         fontSize: 36,
         fontWeight: 'bold'
+    } as any,
+    textstyle_label: {
+        fontSize: 14,
+        margin: 10
     } as any,
     controlContainer: {
         flex: 1,
         alignItems: 'center',
-        backgroundColor: 'skyblue'
+        flexDirection: 'column',
+        justifyContent: 'center',
+        backgroundColor: 'skyblue',
+        margin: 10
+    } as any,
+    textInput: {
+        height: 50,
+        width: 80,
+        color: 'white',
+        alignSelf: 'center',
+        textAlign: 'center'
     }
 });
