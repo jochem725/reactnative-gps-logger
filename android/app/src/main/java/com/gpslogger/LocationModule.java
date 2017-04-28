@@ -85,7 +85,7 @@ public class LocationModule extends ReactContextBaseJavaModule {
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = MainApplication.getAppContext().registerReceiver(null, ifilter);
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-        float batlevel = ((float)batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) / (float)scale)* 100.0f;
+        float batlevel = ((float)batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) / (float)scale) * 100.0f;
         battery.invoke(0, batlevel);
     }
 
