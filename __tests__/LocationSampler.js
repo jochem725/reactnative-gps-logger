@@ -9,7 +9,7 @@ import renderer from 'react-test-renderer';
 beforeAll(() => {
     NativeModules.NativeLocation = { 
         getGPSLocation: jest.fn((callback) => {
-            return callback(null, "{\"latitude\": 1, \"longitude\": 2 }");
+            return callback(null, 1, 2, 3, 4, 5, 6);
         }),
         getBatteryLevel: jest.fn((callback) => {
             return callback(null, 20);
@@ -86,6 +86,17 @@ describe('the getGeoLocation() method', () => {
     test('pushes a location object to the list of samples', () => {
         locationSampler = new LocationSampler(1000, false, "Test");
         locationSampler.getGeoLocation()
-        expect(locationSampler.samples).toContainEqual({"latitude": 1, "longitude": 2})
+        expect(locationSampler.samples).toContainEqual(
+            { "coords": {
+                "longitude": 2,
+                "latitude": 1,
+                "altitude": 3,
+                "accuracy": 5,
+                "altitudeAccuracy": null,
+                "heading": null,
+                "speed": 6
+            },
+            "timestamp": 4
+        })
     });
 });
