@@ -71,9 +71,21 @@ export default class LocationSampler {
      */
     private getGeoLocation(): void {
         NativeModules.NativeLocation.getGPSLocation(
-            (err, position) => {
+            (err, lat, lon, alt, time, acc, speed) => {
+                console.log(time);
                 if (!err) {
-                    const data = JSON.parse(position);
+                    const data = {
+                        "coords": {
+                            "longitude": lon,
+                            "latitude": lat,
+                            "altitude": alt,
+                            "accuracy": acc,
+                            "altitudeAccuracy": null,
+                            "heading": null,
+                            "speed": speed
+                        },
+                        "timestamp": time
+                    };
                     this.samples.push(data);
                 }
             },

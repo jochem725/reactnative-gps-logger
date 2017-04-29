@@ -43,13 +43,10 @@ public class LocationModule extends ReactContextBaseJavaModule {
         locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, new LocationListener(){
 
             public void onLocationChanged(Location location) {
-                String result = new JSONObject().toString();
-                try {
-                   result = createLocationJSON(location);
-                } catch(Exception e){
-                    position.invoke(1, result);
-                }
-                position.invoke(0, result);
+                double time = (double) location.getTime();
+
+                position.invoke(0, location.getLatitude(), location.getLongitude(), location.getAltitude(),
+                        time, location.getAccuracy(), location.getSpeed());
             }
 
             public void onProviderDisabled(String provider) {}
@@ -58,22 +55,6 @@ public class LocationModule extends ReactContextBaseJavaModule {
 
             }
         }, null);
-    }
-
-    /**
-     * Creates a json object from a location object
-     * @param location object of the current position
-     * @return Json object of the current location
-     * @throws JSONException when the json object cannot be created
-     */
-    public String createLocationJSON(Location location) throws JSONException {
-
-        JSONObject json = new JSONObject();
-        json.put("longitude", location.getLongitude());
-        json.put("latitude", location.getLatitude());
-	    json.put("altitude", location.getAltitude());
-        json.put("timestamp", location.getTime());
-        return json.toString();
     }
 
     /**
