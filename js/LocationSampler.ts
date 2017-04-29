@@ -1,15 +1,13 @@
-import {
-    NativeModules
-} from 'react-native';
-var RNFS = require('react-native-fs');
+import { NativeModules } from "react-native";
+const ReactNativeFS = require("react-native-fs");
 
 export default class LocationSampler {
 
-    private readonly DEFAULT_INTERVAL = 1000;
     public running: boolean;
     public interval: number;
     public highAccuracy: boolean;
     public measurementName: string;
+    private readonly DEFAULT_INTERVAL = 1000;
     private timerId: number;
     private samples: Position[];
     private batteryLevelStart : number;
@@ -22,7 +20,7 @@ export default class LocationSampler {
         this.timerId = -1;
         this.highAccuracy = highAccuracy;
         this.measurementName = measurementName;
-        this.interval = interval > 0 ? interval : this.DEFAULT_INTERVAL
+        this.interval = interval > 0 ? interval : this.DEFAULT_INTERVAL;
         this.samples = [];
     }
 
@@ -31,7 +29,7 @@ export default class LocationSampler {
      */
     public start(): void {
         if (this.timerId === -1) {
-            this.timerId = setInterval(() => {this.getGeoLocation()}, this.interval);
+            this.timerId = setInterval(() => {this.getGeoLocation(); }, this.interval);
             this.running = true;
             NativeModules.NativeLocation.getBatteryLevel(
             (err, level) => {
@@ -54,24 +52,18 @@ export default class LocationSampler {
             this.timerId = -1;
             this.running = false;
         }
-        var path = RNFS.ExternalDirectoryPath + '/' + this.measurementName + '.json';
+
+        var path = ReactNativeFS.ExternalDirectoryPath + '/' + this.measurementName + '.json';
         NativeModules.NativeLocation.getBatteryLevel(
             (err, level) => {
                 if (!err) {
                     const data = JSON.stringify({ battery_after: level,
                                                 battery_before: this.batteryLevelStart,
                                                 samples: this.samples});
-                    RNFS.writeFile(path, data, "utf8");
+                    ReactNativeFS.writeFile(path, data, "utf8");
                 }
             },
         );
-    }
-
-    /**
-     * Returns the array of collected samples.
-     */
-    public getCollectedSamples(): Position[] {
-        return this.samples;
     }
 
     /**
