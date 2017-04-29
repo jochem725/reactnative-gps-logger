@@ -10,6 +10,7 @@ export default class LocationSampler {
     private readonly DEFAULT_INTERVAL = 1000;
     private timerId: number;
     private samples: Position[];
+    private batteryLevelStart : number;
 
     /**
      * LocationSampler handles sampling of a location with a fixed interval.
@@ -30,6 +31,15 @@ export default class LocationSampler {
         if (this.timerId === -1) {
             this.timerId = setInterval(() => {this.getGeoLocation(); }, this.interval);
             this.running = true;
+            NativeModules.NativeLocation.getBatteryLevel(
+            (err, level) => {
+                if (!err) {
+                    console.log("batlevel:" + level);
+                    this.batteryLevelStart = level;
+                } else {
+                    console.log("Error in battery info");
+                }
+            });
         }
     }
 
@@ -43,15 +53,17 @@ export default class LocationSampler {
             this.running = false;
         }
 
-        const path = ReactNativeFS.ExternalDirectoryPath + "/" + this.measurementName + ".json";
-        const data = JSON.stringify({samples: this.samples});
-
-        ReactNativeFS.writeFile(path, data, "utf8")
-            .then((succes) => {
-                console.log('File written');
-            }).catch((err) => {
-            console.log(err.message);
-        });
+        var path = ReactNativeFS.ExternalDirectoryPath + '/' + this.measurementName + '.json';
+        NativeModules.NativeLocation.getBatteryLevel(
+            (err, level) => {
+                if (!err) {
+                    const data = JSON.stringify({ battery_after: level,
+                                                battery_before: this.batteryLevelStart,
+                                                samples: this.samples});
+                    ReactNativeFS.writeFile(path, data, "utf8");
+                }
+            },
+        );
     }
 
     /**
@@ -63,9 +75,6 @@ export default class LocationSampler {
                 if (!err) {
                     const data = JSON.parse(position);
                     this.samples.push(data);
-                    console.log(data.longitude);
-                } else {
-                    console.log("Error in retrieving location");
                 }
             },
         );
