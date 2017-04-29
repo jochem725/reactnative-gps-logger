@@ -6,6 +6,17 @@ const ReactNativeFS = require("react-native-fs");
 
 import renderer from 'react-test-renderer';
 
+beforeAll(() => {
+    NativeModules.NativeLocation = { 
+        getGPSLocation: jest.fn((callback) => {
+            return callback(null, "{\"latitude\": 1, \"longitude\": 2 }");
+        }),
+        getBatteryLevel: jest.fn((callback) => {
+            return callback(null, 20);
+        })
+    } 
+})
+
 describe('the constructor', () => {
     test('does not set negative sampling intervals', () => {
         let locationSampler = new LocationSampler(-1000, false, "Test");
@@ -59,18 +70,13 @@ describe('the stop() method', () => {
         const path = "PATH/" + locationSampler.measurementName + ".json";
         locationSampler.start();
         locationSampler.samples = [1, 2, 3]
+        locationSampler.batteryLevelStart = 100
         locationSampler.stop();
-        expect(ReactNativeFS.writeFile).toHaveBeenCalledWith(path, JSON.stringify({ samples: [1, 2, 3] }), "utf8");
+        expect(ReactNativeFS.writeFile).toHaveBeenCalledWith(path, JSON.stringify({ battery_after: 20, battery_before: 100, samples: [1, 2, 3] }), "utf8");
     });
 });
 
 describe('the getGeoLocation() method', () => {
-    beforeAll(() => {
-        NativeModules.NativeLocation = { getGPSLocation: jest.fn((callback) => {
-            return callback(null, "{\"latitude\": 1, \"longitude\": 2 }");
-        }) } 
-    })
-
     test('calls method geoLocation method', () => {
         locationSampler = new LocationSampler(1000, false, "Test");
         locationSampler.getGeoLocation()
