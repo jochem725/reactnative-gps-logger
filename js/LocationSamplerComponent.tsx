@@ -1,115 +1,114 @@
-import * as React from 'react';
+import * as React from "react";
 import {
-    View,
-    ScrollView,
-    Text,
     Button,
+    ScrollView,
+    StyleSheet,
     Switch,
+    Text,
     TextInput,
-    StyleSheet
-} from 'react-native';
-import LocationSampler from './LocationSampler';
+    View,
+} from "react-native";
+import LocationSampler from "./LocationSampler";
 
-class LocationSamplerState {
-    running: boolean
-    sampler: LocationSampler
-    highAccuracyEnabledSetting: boolean
-    sampleRateSetting: number
-    measurementNameSetting: string
+interface ILocationSamplerState {
+    sampler: LocationSampler;
+    highAccuracyEnabledSetting: boolean;
+    sampleRateSetting: number;
+    measurementNameSetting: string;
 }
 
-export default class LocationSamplerComponent extends React.Component<undefined, LocationSamplerState> {
-    
+export default class LocationSamplerComponent extends React.Component<undefined, ILocationSamplerState> {
+
     constructor(props) {
-        super(props)
-        let sampler = new LocationSampler(1000, false, 'Name')
+        super(props);
+        const locationSampler = new LocationSampler(1000, false, "Name");
 
         this.state = {
-            running: false,
             highAccuracyEnabledSetting: false,
-            sampler: sampler,
-            sampleRateSetting: 1000,
-            measurementNameSetting: 'Name'
-        }
+            measurementNameSetting: locationSampler.measurementName,
+            sampleRateSetting: locationSampler.interval,
+            sampler: locationSampler,
+        };
     }
-    
+
     public render() {
         return (
             <ScrollView style={styles.background}>
                 <View style={styles.titleContainer}>
-                        <Text style={styles.textstyle_title}>GeoSampler</Text>
+                    <Text style={styles.textstyle_title}>GeoSampler</Text>
                 </View>
                 <View style={styles.controlContainer}>
                     <Text style={styles.textstyle_label}>Name your measurement:</Text>
-                    <TextInput style={styles.textInput} editable={!this.state.running} onChangeText={(text) => this.setState({measurementNameSetting: text})} value={this.state.measurementNameSetting} keyboardType='default'/>
+                    <TextInput style={styles.textInput} editable={!this.state.sampler.running} onChangeText={(text) => this.setState({ measurementNameSetting: text })} value={this.state.measurementNameSetting} keyboardType="default" />
                 </View>
                 <View style={styles.controlContainer}>
                     <Text style={styles.textstyle_label}>Sample Interval (ms):</Text>
-                    <TextInput style={styles.textInput} editable={!this.state.running} onChangeText={(text) => this.setState({sampleRateSetting: parseInt(text.replace(',', ''))})} value={this.state.sampleRateSetting.toString()} keyboardType='numeric'/>
+                    <TextInput style={styles.textInput} editable={!this.state.sampler.running} onChangeText={(text) => this.setState({ sampleRateSetting: parseInt(text.replace(",", "")) })} value={this.state.sampleRateSetting.toString()} keyboardType="numeric" />
                 </View>
                 <View style={styles.controlContainer}>
                     <Text style={styles.textstyle_label}>High Accuracy Mode:</Text>
-                    <Switch disabled={this.state.running} value={this.state.highAccuracyEnabledSetting} onValueChange={(val) => this.setState({highAccuracyEnabledSetting: val})}/>
+                    <Switch disabled={this.state.sampler.running} value={this.state.highAccuracyEnabledSetting} onValueChange={(val) => this.setState({ highAccuracyEnabledSetting: val })} />
                 </View>
                 <View style={styles.controlContainer}>
-                    <Button title={this.buttonStartStopText()} onPress={() => {this.buttonStartStop()}}></Button>
+                    <Button title={this.buttonStartStopText()} onPress={() => { this.buttonStartStop(); }}></Button>
                 </View>
             </ScrollView>
         );
     }
 
     public buttonStartStopText() {
-        if (this.state.running) {
-            return 'Stop'
+        if (this.state.sampler.running) {
+            return "Stop";
         } else {
-            return 'Start'
+            return "Start";
         }
     }
 
     public buttonStartStop() {
-        if (this.state.running) {
-            this.setState({running: false}, () => {
-                this.state.sampler.stop()
-            })
+        if (this.state.sampler.running) {
+            this.state.sampler.stop();
+            this.forceUpdate();
         } else {
-            this.setState({sampler: new LocationSampler(this.state.sampleRateSetting, this.state.highAccuracyEnabledSetting, this.state.measurementNameSetting), running: true}, () => {
-                this.state.sampler.start()
-            })
+            const locationSampler = new LocationSampler(this.state.sampleRateSetting, this.state.highAccuracyEnabledSetting, this.state.measurementNameSetting);
+            this.setState({ sampler: locationSampler}, () => {
+                this.state.sampler.start();
+                this.forceUpdate();
+            });
         }
     }
 }
 
-let styles = StyleSheet.create({
+const styles = StyleSheet.create({
     background: {
-        backgroundColor: 'skyblue'
+        backgroundColor: "skyblue",
     } as any,
-    titleContainer: {
-        height: 100,
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'powderblue'
-    },
-    textstyle_title: {
-        fontSize: 36,
-        fontWeight: 'bold'
+    controlContainer: {
+        alignItems: "center",
+        backgroundColor: "skyblue",
+        flex: 1,
+        flexDirection: "column",
+        justifyContent: "center",
+        margin: 10,
+    } as any,
+    textInput: {
+        alignSelf: "center",
+        color: "white",
+        height: 50,
+        textAlign: "center",
+        width: 80,
     } as any,
     textstyle_label: {
         fontSize: 14,
-        margin: 10
+        margin: 10,
     } as any,
-    controlContainer: {
-        flex: 1,
-        alignItems: 'center',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        backgroundColor: 'skyblue',
-        margin: 10
+    textstyle_title: {
+        fontSize: 36,
+        fontWeight: "bold",
     } as any,
-    textInput: {
-        height: 50,
-        width: 80,
-        color: 'white',
-        alignSelf: 'center',
-        textAlign: 'center'
-    }
+    titleContainer: {
+        alignItems: "center",
+        backgroundColor: "powderblue",
+        height: 100,
+        justifyContent: "center",
+    } as any,
 });
