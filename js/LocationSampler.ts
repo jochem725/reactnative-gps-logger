@@ -1,17 +1,16 @@
-import {
-    NativeModules
-} from 'react-native';
-var RNFS = require('react-native-fs');
+import { NativeModules } from "react-native";
+const ReactNativeFS = require("react-native-fs");
 
 export default class LocationSampler {
 
-    private readonly DEFAULT_INTERVAL = 1000;
     public running: boolean;
     public interval: number;
     public highAccuracy: boolean;
     public measurementName: string;
+    private readonly DEFAULT_INTERVAL = 1000;
     private timerId: number;
     private samples: Position[];
+    private batteryLevelStart : number;
 
     /**
      * LocationSampler handles sampling of a location with a fixed interval.
@@ -20,8 +19,8 @@ export default class LocationSampler {
         this.running = false;
         this.timerId = -1;
         this.highAccuracy = highAccuracy;
-        this.measurementName = measurementName
-        this.interval = interval > 0 ? interval : this.DEFAULT_INTERVAL
+        this.measurementName = measurementName;
+        this.interval = interval > 0 ? interval : this.DEFAULT_INTERVAL;
         this.samples = [];
     }
 
@@ -30,8 +29,17 @@ export default class LocationSampler {
      */
     public start(): void {
         if (this.timerId === -1) {
-            this.timerId = setInterval(() => {this.getGeoLocation()}, this.interval);
+            this.timerId = setInterval(() => {this.getGeoLocation(); }, this.interval);
             this.running = true;
+            NativeModules.NativeLocation.getBatteryLevel(
+            (err, level) => {
+                if (!err) {
+                    console.log("batlevel:" + level);
+                    this.batteryLevelStart = level;
+                } else {
+                    console.log("Error in battery info");
+                }
+            });
         }
     }
 
@@ -44,23 +52,18 @@ export default class LocationSampler {
             this.timerId = -1;
             this.running = false;
         }
-        console.log(RNFS.ExternalDirectoryPath);
-        var path = RNFS.ExternalDirectoryPath + '/' + this.measurementName + '.json';
 
-        var data = JSON.stringify({samples: this.samples});
-        RNFS.writeFile(path, data, 'utf8')
-            .then((succes)=> {
-                console.log('File written');
-            }).catch((err) => {
-            console.log(err.message);
-        });
-    }
-
-    /**
-     * Returns the array of collected samples.
-     */
-    public getCollectedSamples(): Position[] {
-        return this.samples;
+        var path = ReactNativeFS.ExternalDirectoryPath + '/' + this.measurementName + '.json';
+        NativeModules.NativeLocation.getBatteryLevel(
+            (err, level) => {
+                if (!err) {
+                    const data = JSON.stringify({ battery_after: level,
+                                                battery_before: this.batteryLevelStart,
+                                                samples: this.samples});
+                    ReactNativeFS.writeFile(path, data, "utf8");
+                }
+            },
+        );
     }
 
     /**
@@ -68,15 +71,24 @@ export default class LocationSampler {
      */
     private getGeoLocation(): void {
         NativeModules.NativeLocation.getGPSLocation(
-            (err, position) => {
+            (err, lat, lon, alt, time, acc, speed) => {
+                console.log(time);
                 if (!err) {
-                    var data = JSON.parse(position);
+                    const data = {
+                        "coords": {
+                            "longitude": lon,
+                            "latitude": lat,
+                            "altitude": alt,
+                            "accuracy": acc,
+                            "altitudeAccuracy": null,
+                            "heading": null,
+                            "speed": speed
+                        },
+                        "timestamp": time
+                    };
                     this.samples.push(data);
-                    console.log(data.longitude);
-                } else {
-                    console.log("Error in retrieving location");
                 }
-            }
+            },
         );
     }
 }

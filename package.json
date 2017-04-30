@@ -24,6 +24,8 @@
     "typescript": "^2.2.2"
   },
   "jest": {
-    "preset": "react-native"
+    "preset": "react-native",
+    "setupFiles": ["./jest/setup.js"],
+    "collectCoverage": true
   }
 }

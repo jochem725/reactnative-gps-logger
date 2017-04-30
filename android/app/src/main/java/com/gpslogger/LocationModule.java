@@ -1,9 +1,13 @@
 package com.gpslogger;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.BatteryManager;
 import android.os.Bundle;
 
 import com.facebook.react.bridge.Callback;
@@ -39,13 +43,10 @@ public class LocationModule extends ReactContextBaseJavaModule {
         locationManager.requestSingleUpdate(LocationManager.GPS_PROVIDER, new LocationListener(){
 
             public void onLocationChanged(Location location) {
-                String result = new JSONObject().toString();
-                try {
-                   result = createLocationJSON(location);
-                } catch(Exception e){
-                    position.invoke(1, result);
-                }
-                position.invoke(0, result);
+                double time = (double) location.getTime();
+
+                position.invoke(0, location.getLatitude(), location.getLongitude(), location.getAltitude(),
+                        time, location.getAccuracy(), location.getSpeed());
             }
 
             public void onProviderDisabled(String provider) {}
@@ -57,17 +58,16 @@ public class LocationModule extends ReactContextBaseJavaModule {
     }
 
     /**
-     * Creates a json object from a location object
-     * @param location object of the current position
-     * @return Json object of the current location
-     * @throws JSONException when the json object cannot be created
+     * returns the current battery level
+     * @return int of the battery level
      */
-    public String createLocationJSON(Location location) throws JSONException {
-        JSONObject json = new JSONObject();
-        json.put("longitude", location.getLongitude());
-        json.put("latitude", location.getLatitude());
-        json.put("timestamp", location.getTime());
-        return json.toString();
+    @ReactMethod
+    public void getBatteryLevel(final Callback battery){
+        IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        Intent batteryStatus = MainApplication.getAppContext().registerReceiver(null, ifilter);
+        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        float batlevel = ((float)batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) / (float)scale) * 100.0f;
+        battery.invoke(0, batlevel);
     }
 
 
