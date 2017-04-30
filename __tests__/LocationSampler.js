@@ -72,7 +72,7 @@ describe('the stop() method', () => {
         locationSampler.samples = [1, 2, 3]
         locationSampler.batteryLevelStart = 100
         locationSampler.stop();
-        expect(ReactNativeFS.writeFile).toHaveBeenCalledWith(path, JSON.stringify({ battery_after: 20, battery_before: 100, samples: [1, 2, 3] }), "utf8");
+        expect(ReactNativeFS.writeFile).toHaveBeenCalledWith(path, JSON.stringify({ battery_after: 20, battery_before: 100, samplerate: 1000, measurementname: "Test", samples: [1, 2, 3] }), "utf8");
     });
 });
 
