@@ -73,35 +73,32 @@ export default class LocationSamplerComponent extends React.Component<undefined,
                     />
                 </View>
                 <View style={styles.controlContainer}>
-                    <Button title={this.buttonStartStopText()} onPress={this.buttonStartStop} />
+                    <Button title={this.state.sampler.running ? "Stop" : "Start"} onPress={this.buttonStartStop} />
                 </View>
             </ScrollView>
         );
     }
 
-    public buttonStartStopText() {
-        if (this.state.sampler.running) {
-            return "Stop";
-        } else {
-            return "Start";
-        }
+    private buttonStartStop = () => {
+        (this.state.sampler.running) ? this.stopMeasurement() : this.startMeasurement();
     }
 
-    public buttonStartStop = () => {
-        if (this.state.sampler.running) {
-            this.state.sampler.stop();
-            this.forceUpdate();
-        } else {
-            const sampleRate = this.state.settings.sampleRate;
-            const enableHighAccuracy = this.state.settings.enableHighAccuracy;
-            const measurementName = this.state.settings.measurementName;
+    private startMeasurement() {
+            const settings = this.state.settings;
+            const sampleRate = settings.sampleRate;
+            const enableHighAccuracy = settings.enableHighAccuracy;
+            const measurementName = settings.measurementName;
             const locationSampler = new LocationSampler(sampleRate, enableHighAccuracy, measurementName);
 
             this.setState({ sampler: locationSampler }, () => {
                 this.state.sampler.start();
                 this.forceUpdate();
             });
-        }
+    }
+
+    private stopMeasurement() {
+        this.state.sampler.stop();
+        this.forceUpdate();
     }
 
     private onMeasurementNameChangeText = (text) => {
