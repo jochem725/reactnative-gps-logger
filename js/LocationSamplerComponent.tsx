@@ -69,7 +69,7 @@ export default class LocationSamplerComponent extends React.Component<undefined,
                     <Switch
                         disabled={sampler.running}
                         value={settings.enableHighAccuracy}
-                        onValueChange={this.onAccuracyChangeText}
+                        onValueChange={this.onAccuracyChangeVal}
                     />
                 </View>
                 <View style={styles.controlContainer}>
@@ -108,23 +108,23 @@ export default class LocationSamplerComponent extends React.Component<undefined,
         this.setState({
             settings: {
                 ...this.state.settings,
-                measurementNameSetting: text,
+                measurementName: text,
             },
         });
     }
 
     private onSampleRateChangeText = (text) => {
-        const sampleRate = parseInt(text.replace(",", ""), 10);
+        const sampleRateInt = text.length > 0 ? parseInt(text.replace(",", ""), 10) : 0;
 
         this.setState({
             settings: {
                 ...this.state.settings,
-                sampleRateSetting: sampleRate,
+                sampleRate: sampleRateInt,
             },
         });
     }
 
-    private onAccuracyChangeText = (val) => {
+    private onAccuracyChangeVal = (val) => {
         this.setState({
             settings: {
                 ...this.state.settings,
