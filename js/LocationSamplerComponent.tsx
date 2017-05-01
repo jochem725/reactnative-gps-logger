@@ -133,11 +133,10 @@ export default class LocationSamplerComponent extends React.Component<undefined,
 
 const styles = StyleSheet.create({
     background: {
-        backgroundColor: "skyblue",
+        backgroundColor: "#FDB82D",
     },
     controlContainer: {
         alignItems: "center",
-        backgroundColor: "skyblue",
         flex: 1,
         flexDirection: "column",
         justifyContent: "center",
@@ -160,7 +159,7 @@ const styles = StyleSheet.create({
     },
     titleContainer: {
         alignItems: "center",
-        backgroundColor: "powderblue",
+        backgroundColor: "#F9DC98",
         height: 100,
         justifyContent: "center",
     },
