@@ -59,6 +59,8 @@ export default class LocationSampler {
                 if (!err) {
                     const data = JSON.stringify({ battery_after: level,
                                                 battery_before: this.batteryLevelStart,
+                                                measurementname: this.measurementName,
+                                                samplerate: this.interval,
                                                 samples: this.samples});
                     ReactNativeFS.writeFile(path, data, "utf8");
                 }
