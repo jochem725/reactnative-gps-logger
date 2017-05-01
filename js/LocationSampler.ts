@@ -10,7 +10,7 @@ export default class LocationSampler {
     private readonly DEFAULT_INTERVAL = 1000;
     private timerId: number;
     private samples: Position[];
-    private batteryLevelStart : number;
+    private batteryLevelStart: number;
 
     /**
      * LocationSampler handles sampling of a location with a fixed interval.
@@ -29,17 +29,14 @@ export default class LocationSampler {
      */
     public start(): void {
         if (this.timerId === -1) {
-            this.timerId = setInterval(() => {this.getGeoLocation(); }, this.interval);
+            this.timerId = setInterval(() => { this.getGeoLocation(); }, this.interval);
             this.running = true;
             NativeModules.NativeLocation.getBatteryLevel(
-            (err, level) => {
-                if (!err) {
-                    console.log("batlevel:" + level);
-                    this.batteryLevelStart = level;
-                } else {
-                    console.log("Error in battery info");
-                }
-            });
+                (err, level) => {
+                    if (!err) {
+                        this.batteryLevelStart = level;
+                    }
+                });
         }
     }
 
@@ -53,15 +50,17 @@ export default class LocationSampler {
             this.running = false;
         }
 
-        var path = ReactNativeFS.ExternalDirectoryPath + '/' + this.measurementName + '.json';
+        const path = ReactNativeFS.ExternalDirectoryPath + "/" + this.measurementName + ".json";
         NativeModules.NativeLocation.getBatteryLevel(
             (err, level) => {
                 if (!err) {
-                    const data = JSON.stringify({ battery_after: level,
-                                                battery_before: this.batteryLevelStart,
-                                                measurementname: this.measurementName,
-                                                samplerate: this.interval,
-                                                samples: this.samples});
+                    const data = JSON.stringify({
+                        battery_after: level,
+                        battery_before: this.batteryLevelStart,
+                        measurementname: this.measurementName,
+                        samplerate: this.interval,
+                        samples: this.samples,
+                    });
                     ReactNativeFS.writeFile(path, data, "utf8");
                 }
             },
@@ -73,20 +72,19 @@ export default class LocationSampler {
      */
     private getGeoLocation(): void {
         NativeModules.NativeLocation.getGPSLocation(
-            (err, lat, lon, alt, time, acc, speed) => {
-                console.log(time);
+            (err, lat, lon, alt, time, acc, spd) => {
                 if (!err) {
                     const data = {
-                        "coords": {
-                            "longitude": lon,
-                            "latitude": lat,
-                            "altitude": alt,
-                            "accuracy": acc,
-                            "altitudeAccuracy": null,
-                            "heading": null,
-                            "speed": speed
+                        coords: {
+                            accuracy: acc,
+                            altitude: alt,
+                            altitudeAccuracy: null,
+                            heading: null,
+                            latitude: lat,
+                            longitude: lon,
+                            speed: spd,
                         },
-                        "timestamp": time
+                        timestamp: time,
                     };
                     this.samples.push(data);
                 }
