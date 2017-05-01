@@ -79,10 +79,6 @@ export default class LocationSamplerComponent extends React.Component<undefined,
         );
     }
 
-    private buttonStartStop = () => {
-        (this.state.sampler.running) ? this.stopMeasurement() : this.startMeasurement();
-    }
-
     private startMeasurement() {
             const settings = this.state.settings;
             const sampleRate = settings.sampleRate;
@@ -90,8 +86,8 @@ export default class LocationSamplerComponent extends React.Component<undefined,
             const measurementName = settings.measurementName;
             const locationSampler = new LocationSampler(sampleRate, enableHighAccuracy, measurementName);
 
+            locationSampler.start();
             this.setState({ sampler: locationSampler }, () => {
-                this.state.sampler.start();
                 this.forceUpdate();
             });
     }
