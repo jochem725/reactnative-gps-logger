@@ -30,10 +30,15 @@ test('renders correctly', () => {
 
 describe('the buttonStartStop() method', () => {
   test('starts the measurement if running is false', () => {
+    component.state.sampler.running = false
+    component.buttonStartStop()
+    expect(component.state.sampler.running).toBeTruthy()
 
   });
   test('stops the measurement if running is true', () => {
-
+    component.state.sampler.running = true
+    component.buttonStartStop()
+    expect(component.state.sampler.running).toBeFalsy()
   });
 });
 
