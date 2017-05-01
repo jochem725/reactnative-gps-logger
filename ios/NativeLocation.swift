@@ -6,25 +6,36 @@ import UIKit
 @objc(NativeLocation)
 class NativeLocation: NSObject, CLLocationManagerDelegate {
   
-  let locationManager: CLLocationManager
+  var locationManager: CLLocationManager?
   var locationRequests: [RCTResponseSenderBlock]
-  var batteryLevel: Float
+  let batteryManager: BatteryManager
   
   override init() {
-    locationManager = CLLocationManager()
-    locationManager.requestAlwaysAuthorization()
-    
     locationRequests = [RCTResponseSenderBlock]()
-    batteryLevel = -100
+    batteryManager = BatteryManager()
+    locationManager = nil
     
-    UIDevice.current.isBatteryMonitoringEnabled = true
+    if (CLLocationManager.authorizationStatus() != CLAuthorizationStatus.denied || CLLocationManager.authorizationStatus() != CLAuthorizationStatus.restricted) {
+      locationManager = CLLocationManager()
+      
+      if (CLLocationManager.authorizationStatus() == CLAuthorizationStatus.notDetermined) {
+        locationManager?.requestAlwaysAuthorization()
+      }
+    }
+    
+    super.init()
+    locationManager?.delegate = self
   }
   
   @objc(getGPSLocation:)
   func getGPSLocation(callback: @escaping RCTResponseSenderBlock) -> Void {
-    locationManager.delegate = self
     locationRequests.append(callback)
-    locationManager.startUpdatingLocation()
+    locationManager?.startUpdatingLocation()
+  }
+  
+  @objc(getBatteryLevel:)
+  func getBatteryLevel(callback: @escaping RCTResponseSenderBlock) -> Void {
+    callback([NSNull(), batteryManager.batteryLevel])
   }
   
   func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -40,7 +51,7 @@ class NativeLocation: NSObject, CLLocationManagerDelegate {
       
       positionCallback([NSNull(), lat, lon, alt, time, acc, speed])
     } else {
-      locationManager.stopUpdatingLocation()
+      locationManager?.stopUpdatingLocation()
     }
   }
   
@@ -49,7 +60,7 @@ class NativeLocation: NSObject, CLLocationManagerDelegate {
       let positionCallback = locationRequests.remove(at: 0)
       positionCallback([true])
     } else {
-      locationManager.stopUpdatingLocation()
+      locationManager?.stopUpdatingLocation()
     }
   }
 }
