@@ -1,5 +1,5 @@
 import 'react-native';
-import { NativeModules } from "react-native";
+import { NativeModules, Platform } from "react-native";
 import React from 'react';
 import LocationSampler from '../built/LocationSampler.js';
 const ReactNativeFS = require("react-native-fs");
@@ -15,6 +15,8 @@ beforeAll(() => {
             return callback(null, 20);
         })
     } 
+
+    Platform.OS = 'TestPlatform'
 })
 
 describe('the constructor', () => {
@@ -72,7 +74,7 @@ describe('the stop() method', () => {
         locationSampler.samples = [1, 2, 3]
         locationSampler.batteryLevelStart = 100
         locationSampler.stop();
-        expect(ReactNativeFS.writeFile).toHaveBeenCalledWith(path, JSON.stringify({ battery_after: 20, battery_before: 100, measurementname: "Test", samplerate: 1000, samples: [1, 2, 3] }), "utf8");
+        expect(ReactNativeFS.writeFile).toHaveBeenCalledWith(path, JSON.stringify({ battery_after: 20, battery_before: 100, measurementname: "Test", platform: "TestPlatform", samplerate: 1000, samples: [1, 2, 3] }), "utf8");
     });
 });
 

@@ -1,4 +1,4 @@
-import { NativeModules } from "react-native";
+import { NativeModules, Platform } from "react-native";
 const ReactNativeFS = require("react-native-fs");
 
 export default class LocationSampler {
@@ -50,7 +50,9 @@ export default class LocationSampler {
             this.running = false;
         }
 
-        const path = ReactNativeFS.ExternalDirectoryPath + "/" + this.measurementName + ".json";
+        const dir = Platform.OS === "ios" ? ReactNativeFS.DocumentDirectoryPath : ReactNativeFS.ExternalDirectoryPath;
+        const path = dir + "/" + this.measurementName + ".json";
+
         NativeModules.NativeLocation.getBatteryLevel(
             (err, level) => {
                 if (!err) {
@@ -58,6 +60,7 @@ export default class LocationSampler {
                         battery_after: level,
                         battery_before: this.batteryLevelStart,
                         measurementname: this.measurementName,
+                        platform: Platform.OS,
                         samplerate: this.interval,
                         samples: this.samples,
                     });
