@@ -84,16 +84,16 @@ export default class LocationSamplerComponent extends React.Component<undefined,
     }
 
     private startMeasurement() {
-            const settings = this.state.settings;
-            const sampleRate = settings.sampleRate;
-            const enableHighAccuracy = settings.enableHighAccuracy;
-            const measurementName = settings.measurementName;
-            const locationSampler = new LocationSampler(sampleRate, enableHighAccuracy, measurementName);
+        const settings = this.state.settings;
+        const sampleRate = settings.sampleRate;
+        const enableHighAccuracy = settings.enableHighAccuracy;
+        const measurementName = settings.measurementName;
+        const locationSampler = new LocationSampler(sampleRate, enableHighAccuracy, measurementName);
 
-            this.setState({ sampler: locationSampler }, () => {
-                this.state.sampler.start();
-                this.forceUpdate();
-            });
+        locationSampler.start();
+        this.setState({ sampler: locationSampler }, () => {
+            this.forceUpdate();
+        });
     }
 
     private stopMeasurement() {
@@ -133,11 +133,10 @@ export default class LocationSamplerComponent extends React.Component<undefined,
 
 const styles = StyleSheet.create({
     background: {
-        backgroundColor: "skyblue",
+        backgroundColor: "#FDB82D",
     },
     controlContainer: {
         alignItems: "center",
-        backgroundColor: "skyblue",
         flex: 1,
         flexDirection: "column",
         justifyContent: "center",
@@ -160,7 +159,7 @@ const styles = StyleSheet.create({
     },
     titleContainer: {
         alignItems: "center",
-        backgroundColor: "powderblue",
+        backgroundColor: "#F9DC98",
         height: 100,
         justifyContent: "center",
     },
