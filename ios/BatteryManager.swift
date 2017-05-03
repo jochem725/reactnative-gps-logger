@@ -8,9 +8,9 @@ class BatteryManager: NSObject {
   var batteryLevel: Float
   
   override init() {
-    self.batteryLevel = -100
     UIDevice.current.isBatteryMonitoringEnabled = true
-
+    batteryLevel = UIDevice.current.batteryLevel * 100
+    
     super.init()    
     NotificationCenter.default.addObserver(self, selector: #selector(updateBatteryLevel), name: NSNotification.Name.UIDeviceBatteryLevelDidChange, object: nil)
   }
