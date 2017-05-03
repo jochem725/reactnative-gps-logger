@@ -45,7 +45,7 @@ class NativeLocation: NSObject, CLLocationManagerDelegate {
       let lat = location.coordinate.latitude
       let lon = location.coordinate.longitude
       let alt = location.altitude
-      let time = location.timestamp.description
+      let time = location.timestamp.timeIntervalSince1970
       let acc = location.horizontalAccuracy
       let speed = location.speed
       
